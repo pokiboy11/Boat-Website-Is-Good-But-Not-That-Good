@@ -1,6 +1,7 @@
 function pick(obj, keys) {
+  if (!obj) return "N/A";
   for (const k of keys) {
-    if (obj[k] && obj[k].toString().trim() !== "") {
+    if (obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") {
       return obj[k];
     }
   }
@@ -30,16 +31,30 @@ async function lookup() {
       return;
     }
 
-    const d = data.data || data;
+    // 🔥 NORMALIZE RESPONSE
+    let record = null;
 
-    const name = pick(d, ["name", "Name", "full_name", "customer_name"]);
-    const father = pick(d, ["father", "father_name", "Father_Name", "spouse"]);
-    const mobile = pick(d, ["mobile", "mobile_no", "Mobile", "Mobile_No"]) || num;
-    const altMobile = pick(d, ["alt_mobile", "alternate_mobile", "Alt_Mobile"]);
-    const circle = pick(d, ["circle", "telecom_circle", "Circle"]);
-    const id = pick(d, ["id", "ID", "aadhaar", "aadhar", "ID_Number"]);
-    const address = pick(d, ["address", "Address", "full_address"]);
-    const email = pick(d, ["email", "Email"]);
+    if (Array.isArray(data)) {
+      record = data[0];
+    } else if (Array.isArray(data.data)) {
+      record = data.data[0];
+    } else if (data.data && typeof data.data === "object") {
+      record = data.data;
+    } else if (data.result) {
+      record = data.result;
+    } else {
+      record = data;
+    }
+
+    // 🔥 MAP FIELDS
+    const name = pick(record, ["name", "Name", "full_name"]);
+    const father = pick(record, ["father", "father_name", "Father", "Father_Name", "spouse"]);
+    const mobile = pick(record, ["mobile", "Mobile", "mobile_no", "Mobile_No", "number"]) || num;
+    const altMobile = pick(record, ["alt_mobile", "alternate_mobile", "Alt_Mobile"]);
+    const circle = pick(record, ["circle", "Circle", "telecom_circle"]);
+    const id = pick(record, ["id", "ID", "ID_Number", "aadhaar", "aadhar"]);
+    const address = pick(record, ["address", "Address", "full_address"]);
+    const email = pick(record, ["email", "Email"]);
 
     out.innerHTML = `
       <div class="row"><div class="label">👤 Name</div><div class="value">${name}</div></div>
