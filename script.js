@@ -1,33 +1,37 @@
-function renderAligned(data) {
+function row(label, value) {
+  if (value === undefined || value === null || String(value).trim() === "") {
+    return "";
+  }
+  return `
+    <div class="row">
+      <div class="label">${label}</div>
+      <div class="value">${value}</div>
+    </div>
+  `;
+}
+
+function renderResults(results) {
   let html = "";
 
-  // If array → take first record
-  if (Array.isArray(data)) {
-    data = data[0];
-  }
-
-  // If still not an object, show raw
-  if (typeof data !== "object" || data === null) {
-    return `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-  }
-
-  for (const key in data) {
-    let value = data[key];
-
-    // Convert objects/arrays to readable text
-    if (typeof value === "object") {
-      value = JSON.stringify(value, null, 2);
-    }
-
+  results.forEach((r, i) => {
     html += `
-      <div class="row">
-        <div class="label">🔹 ${key}</div>
-        <div class="value">${value}</div>
-      </div>
-    `;
-  }
+      <div style="margin-bottom:20px">
+        <b>▶ RESULT ${i + 1}</b><br><br>
 
-  return html || "<b>No readable data found</b>";
+        ${row("👤 Name", r.name)}
+        ${row("🧔 Father/Spouse", r.father_name)}
+        ${row("📞 Mobile", r.mobile)}
+        ${row("📲 Alt Mobile", r.alt_mobile)}
+        ${row("📍 Circle", r.circle)}
+        ${row("🆔 ID", r.id || r.id_number)}
+        ${row("🏠 Address", r.address)}
+        ${row("✉️ Email", r.email)}
+      </div>
+      <hr style="border-color:#00ff88">
+    `;
+  });
+
+  return html || "<b>No readable records found</b>";
 }
 
 async function lookup() {
@@ -39,26 +43,18 @@ async function lookup() {
     return;
   }
 
-  out.innerHTML = "⌛ Fetching & aligning data…";
+  out.innerHTML = "⌛ Formatting results…";
 
   try {
     const res = await fetch(`/api/lookup?num=${num}`);
-    const text = await res.text();
+    const data = await res.json();
 
-    let json;
-    try {
-      json = JSON.parse(text);
-    } catch {
-      out.innerHTML = `<pre>${text}</pre>`;
+    if (!data.success || !Array.isArray(data.result)) {
+      out.innerHTML = "<b>No valid data found</b>";
       return;
     }
 
-    // Normalize common wrappers
-    let record = json;
-    if (json.data) record = json.data;
-    if (json.result) record = json.result;
-
-    out.innerHTML = renderAligned(record);
+    out.innerHTML = renderResults(data.result);
 
   } catch (e) {
     out.innerHTML = "✖ System error";
