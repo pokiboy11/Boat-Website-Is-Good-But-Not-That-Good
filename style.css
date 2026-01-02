@@ -1,12 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
+/* ---------- BASE ---------- */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   background: #000;
   font-family: 'Share Tech Mono', monospace;
   color: #00ff88;
+  overflow-x: hidden;
 }
 
+/* ---------- SCANLINES ---------- */
 .scanlines {
   position: fixed;
   inset: 0;
@@ -18,61 +25,124 @@ body {
     transparent 3px
   );
   pointer-events: none;
+  z-index: 1;
 }
 
+/* ---------- CONTAINER ---------- */
 .container {
+  position: relative;
+  z-index: 2;
   max-width: 720px;
-  margin: 80px auto;
+  margin: 70px auto;
   padding: 25px;
   border: 1px solid #00ff88;
-  box-shadow: 0 0 25px #00ff88;
+  box-shadow: 0 0 30px #00ff88;
+  background: rgba(0, 0, 0, 0.9);
 }
 
 h1 {
   text-align: center;
   letter-spacing: 3px;
+  text-shadow: 0 0 10px #00ff88;
+  margin-bottom: 5px;
 }
 
 .subtitle {
   text-align: center;
-  opacity: 0.7;
   font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 20px;
 }
 
-input, button {
+/* ---------- INPUT & BUTTON ---------- */
+input {
   width: 100%;
   padding: 12px;
-  margin-top: 15px;
   background: #000;
   border: 1px solid #00ff88;
   color: #00ff88;
   font-size: 16px;
+  outline: none;
+}
+
+input::placeholder {
+  color: #00ff88;
+  opacity: 0.5;
 }
 
 button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
   background: #00ff88;
+  border: none;
   color: #000;
+  font-size: 16px;
   cursor: pointer;
   letter-spacing: 2px;
 }
 
+button:hover {
+  background: #00ffaa;
+}
+
+/* ---------- OUTPUT BOX ---------- */
 .output {
   margin-top: 25px;
   padding: 15px;
   border: 1px solid #00ff88;
   background: #020202;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
+/* ---------- ROW ALIGNMENT ---------- */
 .row {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  margin-bottom: 6px;
+  grid-template-columns: 160px 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
+/* ---------- LABEL ---------- */
 .label {
   color: #00ffaa;
+  word-break: break-word;
 }
 
+/* ---------- VALUE (FIXES OVERFLOW ISSUE) ---------- */
 .value {
   color: #00ff88;
+  word-break: break-all;       /* 🔥 KEY FIX */
+  overflow-wrap: anywhere;     /* 🔥 KEY FIX */
+  white-space: normal;
+}
+
+/* ---------- SEPARATOR ---------- */
+hr {
+  border: none;
+  border-top: 1px solid #00ff88;
+  margin: 15px 0;
+}
+
+/* ---------- MOBILE RESPONSIVE ---------- */
+@media (max-width: 600px) {
+  .container {
+    margin: 40px 10px;
+    padding: 18px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .label {
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  .value {
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
 }
