@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   try {
     const apiResponse = await fetch(
-      `https://osintx.site/api/api.php?key=Mayank&num=${num}`
+      `https://osintx.site/api/api.php?key=ULTRACOREX&num=${num}`
     );
 
     const text = await apiResponse.text();
